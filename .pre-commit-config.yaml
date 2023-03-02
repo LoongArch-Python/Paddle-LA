@@ -1,0 +1,89 @@
+repos:
+-   repo: https://github.com/Lucas-C/pre-commit-hooks.git
+    rev: v1.1.14
+    hooks:
+    -   id: remove-crlf
+        files: (?!.*third_party)^.*$ | (?!.*book)^.*$
+-   repo: https://github.com/psf/black.git
+    rev: 22.8.0
+    hooks:
+    -   id: black
+        files: (.*\.(py|bzl)|BUILD|.*\.BUILD|WORKSPACE)$
+        exclude: |
+            (?x)^(
+                python/paddle/fluid/tests/unittests/dygraph_to_static/test_error.py|
+                python/paddle/fluid/tests/unittests/dygraph_to_static/test_origin_info.py
+            )$
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: detect-private-key
+        files: (?!.*third_party)^.*$ | (?!.*book)^.*$
+    -   id: end-of-file-fixer
+    -   id: sort-simple-yaml
+        files: (op|backward|op_[a-z_]+)\.yaml$
+-   repo: local
+    hooks:
+    -   id: clang-format
+        name: clang-format
+        description: Format files with ClangFormat.
+        entry: bash ./tools/codestyle/clang_format.hook -i
+        language: system
+        files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx|xpu|kps)$
+        exclude: |
+            (?x)^(
+                paddle/fluid/distributed/ps/thirdparty/round_robin.h
+            )$
+-   repo: local
+    hooks:
+    -   id: cpplint-cpp-source
+        name: cpplint
+        description: Check C++ code style using cpplint.py.
+        entry: bash ./tools/codestyle/cpplint_pre_commit.hook
+        language: system
+        files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx)$
+-   repo: local
+    hooks:
+    -   id: pylint-doc-string
+        name: pylint
+        description: Check python docstring style using docstring_checker.
+        entry: bash ./tools/codestyle/pylint_pre_commit.hook
+        language: system
+        files: \.(py)$
+-   repo: local
+    hooks:
+    -   id: copyright_checker
+        name: copyright_checker
+        entry: python ./tools/codestyle/copyright.hook
+        language: system
+        files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx|proto|xpu|kps|py|sh)$
+        exclude: |
+            (?x)^(
+                paddle/utils/.*
+            )$
+-   repo: local
+    hooks:
+    -   id: auto-generate-cmakelists
+        name: auto-generate-cmakelists
+        entry: bash ./tools/gen_ut_cmakelists.hook
+        language: system
+        files: testslist.csv$
+-   repo: https://github.com/cheshirekow/cmake-format-precommit
+    rev: v0.6.13
+    hooks:
+    -   id: cmake-format
+        # exclude paddle/fluid/operators/CMakeLists.txt, see the comment
+        # https://github.com/PaddlePaddle/Paddle/pull/43057#pullrequestreview-993471860
+        exclude: |
+            (?x)^(
+                paddle/fluid/operators/CMakeLists.txt
+            )$
+
+-   repo: https://github.com/cmake-lint/cmake-lint
+    rev: 1.4.2
+    hooks:
+    -   id: cmakelint
+        args: [--config=./tools/codestyle/.cmakelintrc]
